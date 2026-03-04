@@ -1,5 +1,3 @@
-
-
 class Task {
     constructor(title, description, color, date, status, budget) {
         this.title = title;
@@ -10,3 +8,7 @@ class Task {
         this.budget = budget;
     }
 }
+
+
+
+
