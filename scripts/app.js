@@ -28,8 +28,8 @@ function saveTask() {
         data: JSON.stringify(task),   //Convert the task data to JSON string format
         contentType:"application/json", 
         success: function(created) {
-            displayTask(task);
-            console.log("Task created:", created);
+            displayTask(created);
+            console.log(created);
         },
         error: function(error) {
             console.log( error);
@@ -64,24 +64,30 @@ function updateTask() {
 }
 
 
-
 function displayTask(task) {
+    //id is given by the server, we need to use it to update and delete tasks
     let syntax = `
-    <div class="task" style="border-color:${task.color}">
+    // <div class="card" id="${task.id}" style="background-color:${task.color}"> 
       <div class="info">
         <h4>${task.title}</h4>
         <p>${task.description}</p>
       </div>
       <label class="status">${task.status}</label>
       <div class="date-budget">
-        <label>due: ${task.date}</label>
+        <label>due: ${task.date}</label
         <label>budget: ${task.budget}</label>
+      <div>
+        <button class="btn-delete">Delete</button>
       </div>
-    </div>`;
+    </div>`
     
   // Inject the new HTML into the DOM Tree(append to the list)
    $("#list").append(syntax);
+   
+//    $(".list").on("click",".btn-delete"),
 }
+
+
 
 //conet to server
 //first we need to define the UrL of server
@@ -104,7 +110,40 @@ function loadTasks() {
     })   
 }
 
+function deleteTask() {
+    console.log("Deleting task");
 
+   //1.   contant: "this" is the specific button that was clicked.
+   let btn = $(this);
+
+   //2. find the parent div of the button, which is the card
+   let taskElement = btn.parents(".card");
+
+    
+    //3. Extraction:get the ID of the task from the card's id attribute
+
+   let id = taskElement.attr("id");
+   console.log("Element to delete:", id)
+
+   //4 server communication
+    $.ajax({
+
+        type: "DELETE",  //HTTP verb method - delete
+        url: API + "/" +id,  
+        success: function() {
+
+            //remove the element
+            taskElement.fadeOut(500,function() {
+                $(this).remove();   //remove from the Dom
+        });
+        },
+        error: function(error) {
+            console.log("error", error);
+        }
+    
+    })
+
+}
 
 
 // an example of changing the logic excecution of the code
@@ -114,9 +153,12 @@ function init() {
      
      //hook event
     $("#btnSave").click(saveTask);
-     
+    $(".list").on("click",".btn-delete", deleteTask);
+    // $(".btn-delete").click();
     // load data from the server
     loadTasks();
+
+    
 }
 
 
